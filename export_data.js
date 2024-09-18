@@ -1,5 +1,5 @@
 // export_data.js
-function exportVisibleData(datasetIndex) {
+function exportVisibleData(datasetIndex, datasetId) {
     var plotlyGraph = document.getElementById('plotly-graph');
     var data = plotlyGraph.data;
     var layout = plotlyGraph.layout;
@@ -26,7 +26,7 @@ function exportVisibleData(datasetIndex) {
     if (link.download !== undefined) {
         var url = URL.createObjectURL(blob);
         link.setAttribute("href", url);
-        link.setAttribute("download", `dataset_${datasetIndex + 1}_visible_data.csv`);
+        link.setAttribute("download", `dataset_${datasetId}_visible_data.csv`);
         link.style.visibility = 'hidden';
         document.body.appendChild(link);
         link.click();
@@ -35,13 +35,11 @@ function exportVisibleData(datasetIndex) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('export1').addEventListener('click', function() {
-        console.log('Button 1 clicked');
-        exportVisibleData(0);
-    });
-
-    document.getElementById('export2').addEventListener('click', function() {
-        console.log('Button 2 clicked');
-        exportVisibleData(1);
+    var exportButtons = document.querySelectorAll('[id^="export"]');
+    exportButtons.forEach((button, index) => {
+        button.addEventListener('click', function() {
+            console.log(`Button ${index + 1} clicked`);
+            exportVisibleData(index, this.getAttribute('data-id'));
+        });
     });
 });
