@@ -1,7 +1,6 @@
 import plotly.graph_objects as go
 import pandas as pd
 import json
-import argparse
 import os
 
 def load_dataset(file_path):
@@ -17,8 +16,20 @@ def generate_plot(file_path1, file_path2):
     df2 = load_dataset(file_path2)
 
     fig = go.Figure()
-    fig.add_trace(go.Scatter(x=df1['x'].tolist(), y=df1['y'].tolist(), mode='markers', name='Dataset 1'))
-    fig.add_trace(go.Scatter(x=df2['x'].tolist(), y=df2['y'].tolist(), mode='markers', name='Dataset 2'))
+
+    fig.add_trace(go.Scatter(
+        x=df1['x'].tolist(),
+        y=df1['y'].tolist(),
+        mode='markers',
+        name='Dataset 1'
+    ))
+
+    fig.add_trace(go.Scatter(
+        x=df2['x'].tolist(),
+        y=df2['y'].tolist(),
+        mode='markers',
+        name='Dataset 2'
+    ))
 
     fig.update_layout(
         title='Scatter Plot Comparison',
@@ -28,15 +39,13 @@ def generate_plot(file_path1, file_path2):
         width=800
     )
     print('generating fig...')
-    return fig
-
-
+    return fig, df1, df2
 
 def main():
     file_path1 = r'dataset_2_visible_data(2).csv'
     file_path2 = r'dataset_1_visible_data(7).csv'
     
-    fig = generate_plot(file_path1, file_path2)
+    fig, df1, df2 = generate_plot(file_path1, file_path2)
 
     # Custom JSON encoder to handle NumPy types
     class NumpyEncoder(json.JSONEncoder):
@@ -68,6 +77,8 @@ def main():
         <div id="plotly-graph"></div>
         <script>
             var plotlyJson = {plot_json};
+            var originalData1 = {df1.to_json(orient='records')};
+            var originalData2 = {df2.to_json(orient='records')};
             window.addEventListener('load', function() {{
                 Plotly.newPlot('plotly-graph', plotlyJson.data, plotlyJson.layout);
                 document.getElementById('loading-indicator').textContent = 'Ready!';
